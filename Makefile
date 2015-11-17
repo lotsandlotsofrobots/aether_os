@@ -3,7 +3,7 @@ ROOT=$(shell pwd)
 include globals.mk
 include configs.mk
 
-MODULES=loader kernel display
+MODULES=loader kernel display serial
 OBJECTS=$(MODULES)
 
 OBJS_DIR=$(BUILD_DIR)/objs

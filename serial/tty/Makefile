@@ -4,7 +4,9 @@ endif
 
 include $(ROOT)/globals.mk
 
-OBJECTS = tty.o
+OBJECTS = serial.o
+
+CFLAGS+=-I$(ROOT)/include
 
 all: $(OBJECTS)
 

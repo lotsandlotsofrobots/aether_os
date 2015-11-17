@@ -5,7 +5,7 @@ endif
 
 include $(ROOT)/globals.mk
 
-OBJECTS = kmain.o
+OBJECTS = kmain.o portio.o
 
 CFLAGS+=-I$(ROOT)/include
 
