@@ -1,6 +1,8 @@
 #include "io.h"
 #include "types.h"
 
+#include "portio.h"
+
 #define FB_START 0xB8000
 
 void __lowlevel_write_char(unsigned int address, unsigned char ch, unsigned short color_settings);
@@ -16,7 +18,7 @@ typedef struct __attribute__((packed)) console_settings {
 console_settings settings;
 
 
-unsigned int setClearColor(unsigned char color)
+unsigned int set_clear_color(unsigned char color)
 {
     if ( color > 0xF )
     {
@@ -29,7 +31,7 @@ unsigned int setClearColor(unsigned char color)
 }
 
 
-unsigned int setForegroundColor(unsigned char color)
+unsigned int set_foreground_color(unsigned char color)
 {
     if ( color > 0xF )
     {
@@ -42,7 +44,7 @@ unsigned int setForegroundColor(unsigned char color)
 }
 
 
-unsigned int setBackgroundColor(unsigned char color)
+unsigned int set_background_color(unsigned char color)
 {
     if ( color > 0xF )
     {
@@ -55,7 +57,7 @@ unsigned int setBackgroundColor(unsigned char color)
 }
 
 
-void incrementConsolePosition(int places)
+void increment_console_position(int places)
 {
     int rows = 0;
     int cols = places;
@@ -74,7 +76,16 @@ void incrementConsolePosition(int places)
 
 }
 
-unsigned int setConsolePosition(unsigned int r, unsigned int c)
+
+void line_wrap()
+{
+    settings.row += 1;
+    settings.col = 0;
+}
+
+
+
+unsigned int set_console_position(unsigned int r, unsigned int c)
 {
     settings.row = r;
     settings.col = c;
@@ -83,8 +94,6 @@ unsigned int setConsolePosition(unsigned int r, unsigned int c)
 }
 
 
-//printc(1, 1, 'a', FB_GREEN, FB_BLACK);
-//void printc(unsigned int r, unsigned int c, unsigned char ch, unsigned char fg, unsigned char bg)
 void printc(unsigned char ch)
 {
     int address = FB_START + ((( settings.row * 80) + settings.col ) * 2) ;
@@ -95,23 +104,27 @@ void printc(unsigned char ch)
     framebuffer[0] = ch & 0xFF;
     framebuffer[1] = char_settings;
 
-    incrementConsolePosition(1);
-    
-    //__lowlevel_write_char(address, ch, char_settings) ;
-
+    increment_console_position(1);
 }
 
-//void printf(unsigned int r, unsigned int c, char *msg, unsigned char fg, unsigned char bg)
+
 void printf(char *msg)
 {
     int i = 0;
     for (i = 0; msg[i] != '\0'; i++)
     {
+        if ( msg[i] == '\n' || msg[i] == '\r' )
+        {
+            line_wrap();
+            continue;
+        }
+
         printc(msg[i]);
     }
 }
 
-void clearscreen()
+
+void clear_screen()
 {
     int r = 0;
     int c = 0;
