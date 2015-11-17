@@ -29,5 +29,11 @@ __extension__
 typedef unsigned long long int  uint64_t;
 #endif
 
+typedef enum
+{
+    false = ( 1 == 0 ),
+    true = (!false)
+} bool;
+
 
 #endif 
