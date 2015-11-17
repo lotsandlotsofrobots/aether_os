@@ -36,3 +36,9 @@ install:
 
 clean:
 	rm *.o loader
+
+cleanall:
+	for mm in $(MODULES) ; do \
+                make -C $$mm ROOT=$(ROOT) OBJS_DIR=$(OBJS_DIR) INSTALL_DIR=$(INSTALL_DIR) clean; \
+        done
+

@@ -8,14 +8,14 @@
 #define COM1                          0x03F8
 #define COM2                          0x02F8
 
-#define COM_BASE(c)                    c
-#define COM_DATA_BUFFER(com)             (com + 1)
-#define COM_FIFO(com)                    (com + 2)
-#define COM_LINE_CONTROL(com)            (com + 3)
-#define COM_MODEM_CONTROL(com)           (com + 4)
-#define COM_LINE_STATUS(com)             (com + 5)
-#define COM_MODEM_STATUS(com)            (com + 6)
-#define COM_SCRATCH(com)                 (com + 7)
+#define COM1_BASE                         COM1
+#define COM1_DATA_BUFFER(c)               COM1 + 1
+#define COM1_FIFO(c)                      COM1 + 2
+#define COM1_LINE_CONTROL(c)              COM1 + 3
+#define COM1_MODEM_CONTROL(c)             COM1 + 4
+#define COM1_LINE_STATUS(c)               COM1 + 5
+#define COM1_MODEM_STATUS(c)              COM1 + 6
+#define COM1_SCRATCH(c)                   COM1 + 7
 
 typedef enum { 
 	BAUD_RATE_9600 = 9600,
