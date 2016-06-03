@@ -107,8 +107,24 @@ void printc(unsigned char ch)
     increment_console_position(1);
 }
 
+/*
+enum print_type {
+    CHAR = 1,
+    INT = 2,
+    FLOAT = 3,
+    DOUBLE = 4,
+    STRING = 5,
+    POINTER = 6,
+};
 
-void printf(char *msg)
+
+print_type* get_kprint_arg_type_list(char *msg)
+{
+    // make a linked list, 
+}*/
+
+
+void kprintf(char *msg)
 {
     int i = 0;
     for (i = 0; msg[i] != '\0'; i++)
@@ -123,6 +139,10 @@ void printf(char *msg)
     }
 }
 
+/*void printf(char *msg, ...)
+{
+    // test
+}*/
 
 void clear_screen()
 {

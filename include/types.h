@@ -35,5 +35,7 @@ typedef enum
     true = (!false)
 } bool;
 
+#define SINT32_MAX 2147483647
+#define UINT32_MAX 4294967295
 
 #endif 

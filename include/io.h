@@ -27,7 +27,7 @@ void writechar(void);
 void clear_screen(void);
 
 //void printf(unsigned int r, unsigned int c, char *msg, unsigned char fg, unsigned char bg);
-void printf(char *msg);
+void kprintf(char *msg);
 unsigned int set_console_position(unsigned int r, unsigned int c);
 unsigned int set_clear_color(unsigned char color);
 unsigned int set_foreground_color(unsigned char color);

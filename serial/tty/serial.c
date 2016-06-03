@@ -2,24 +2,25 @@
 #include "portio.h"
 #include "io.h"
 
-void set_serial_baud_rate(uint8_t c, com_baud_rate_t baud_rate)
+void set_serial_baud_rate(uint8_t com, com_baud_rate_t baud_rate)
 {
     unsigned int divisor = 115200 / (unsigned int) baud_rate;
 
     // get the line control value so we can 
     // set the DLAB value and remove it again later
-    uint8_t old_line_control = inb( COM1_LINE_CONTROL );
-    
+    uint8_t old_line_control = inb( COM_LINE_CONTROL(com) );
+    printf("Old line control: ", 
+ 
     uint8_t divisor_high = ( (divisor && 0xFF00 ) >> 8 );
     uint8_t divisor_low  = ( divisor && 0x00FF );
 
-    outb( COM1_LINE_CONTROL, old_line_control | COM_DATA_BUFFER_DLAB_BIT );
+    outb( COM_LINE_CONTROL(com), old_line_control | COM_DATA_BUFFER_DLAB_BIT );
 
-    outb( COM1_BASE, divisor_low );
-    outb( COM1_DATA_BUFFER, divisor_high );
+    outb( COM_BASE(com), divisor_low );
+    outb( COM_DATA_BUFFER(com), divisor_high );
 
     // line control & 0x7F = everything that was there - 0111_1111b
-    outb( COM1_LINE_CONTROL, old_line_control & 0x7F );
+    outb( COM_LINE_CONTROL(com), old_line_control & 0x7F );
 }
 
 
@@ -32,7 +33,7 @@ void set_serial_line_control_settings(uint8_t com, uint8_t data_bits, bool parit
     line_control |= (stop_bits<<2) & 0x04;  // 0000_0100 b
     line_control |= (parity<<3) & 0x38;     // 0011_1000 b
 
-    outb( COM1_LINE_CONTROL, line_control );
+    outb( COM_LINE_CONTROL(com), line_control );
 }
 
 
@@ -43,13 +44,13 @@ void set_serial_fifo_settings(uint8_t com, serial_fifo_trigger_size_t trigger_si
     settings |= (uint8_t)trigger_size_setting << 6;
     settings |= ( enable_wide_fifo == true ? 0x10 : 0x0 );
 
-    outb( COM1_FIFO, settings );
+    outb( COM_FIFO(com), settings );
 }
 
 
 void set_rts(uint8_t com)
 {
-    outb( COM1_MODEM_CONTROL, 0x13 );
+    outb( COM_MODEM_CONTROL(com), 0x13 );
     
 }
 
@@ -58,9 +59,9 @@ uint8_t serial_read(uint8_t com, char *buffer, uint8_t buffersize)
 {
     uint8_t idx = 0;
 
-    while ( ( inb( COM1_LINE_CONTROL ) & 1 ) == 1 && idx < buffersize )
+    while ( ( inb( COM_LINE_CONTROL(com) ) & 1 ) == 1 && idx < buffersize )
     {
-        buffer[idx] = inb( COM1_BASE );
+        buffer[idx] = inb( COM_BASE(com) );
         idx++;
     }
 
@@ -97,11 +98,11 @@ void serial_write(uint8_t com, char c)
 */
     char ch = 'a';
 
-    while ( ( inb( COM1_LINE_STATUS ) & 0x20 ) == 0 ) {
+    while ( ( inb( COM_LINE_STATUS(com) ) & 0x20 ) == 0 ) {
         ch += 1;
         printc(ch);
     }
 
-    outb( COM1_BASE, 0x47 );
+    outb( COM_BASE(com), 0x47 );
 }
 

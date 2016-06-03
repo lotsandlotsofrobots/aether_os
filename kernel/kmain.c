@@ -9,6 +9,7 @@ void init_console()
     set_console_position(0,0);
 }
 
+#define DEBUG_COM 1
 
 void init_debug_port()
 {
@@ -25,19 +26,20 @@ int main()
     init_console();
     clear_screen();
     
-    printf("hello\n\0");
-    printf("This is a test\n\0");
+    kprintf("hello\n\0");
+    kprintf("This is a test\n\0");
 
-    //init_debug_port();
+    init_debug_port();
     
-    printf("set up the serial port\n\0");
+    kprintf("set up the serial port\n\0");
 
     serial_write(DEBUG_COM,'a');
     serial_write(DEBUG_COM,'!');
     serial_write(DEBUG_COM,'P');
     serial_write(DEBUG_COM,'7');
 
-    printf("serial_write done\n\0");
+    kprintf("serial_write done\n\0");
+
 /*
     char c[64];
     uint16_t bytes_read = serial_read(DEBUG_COM, c, 64);
