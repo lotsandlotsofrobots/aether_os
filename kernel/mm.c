@@ -41,13 +41,13 @@ KHEAP_BLOCK_MANAGER *kheap_insert_blocks_at_best_fit(uint32_t total_size)
     // and block->next will become 0)
     KHEAP_BLOCK_MANAGER *best_fit_before = heap;
     //KHEAP_BLOCK_MANAGER *best_fit_after = 0;
-    uint32_t slack_space = UINT32_MAX;
+    uint32_t best_slack = UINT32_MAX;
 
     while ( block->next != 0 )
     {
         // first determine if there are any bytes between
         // these blocks at all...
-        uint32_t block_total_size = num_blocks * (block_size + 1) 
+        uint32_t total_block_size = block->num_blocks * (block->block_size + 1) 
                                     + sizeof(KHEAP_BLOCK_MANAGER);
 
         // find the difference in these two blocks addresses
@@ -93,7 +93,7 @@ KHEAP_BLOCK_MANAGER *k_heap_add_block_manager(uint32_t block_size, uint32_t num_
     new_block->num_blocks = num_blocks;
     new_block->block_size = block_size;
 
-    void *data = new_block + sizeof(KHEAP_BLOCK_MANAGER);
+    uint8_t *data = (uint8_t*) new_block + sizeof(KHEAP_BLOCK_MANAGER);
 
     for ( uint32_t i = 0; i < block_size; ++i )
         data[i] = 0;
@@ -129,7 +129,7 @@ uint8_t k_heap_free_block(uint32_t block_number)
     else
     {
         // intentionally lose track of this block
-        prev->next = block->next
+        prev->next = block->next;
     }
 
     return 0;
@@ -155,7 +155,7 @@ KHEAP_BLOCK_MANAGER *get_best_fit_for_malloc(uint32_t requested_size)
         if ( it_fits  && its_best )
         {
             // does it meet condition 3?
-            uint8_t *used_block_counter = (uint8_t)&block[1];
+            uint8_t *used_block_counter = (uint8_t*)&block[1];
             for ( uint32_t i = 0; i < block->num_blocks; i++ )
             {
                 // if there's a free block

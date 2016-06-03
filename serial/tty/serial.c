@@ -9,7 +9,7 @@ void set_serial_baud_rate(uint8_t com, com_baud_rate_t baud_rate)
     // get the line control value so we can 
     // set the DLAB value and remove it again later
     uint8_t old_line_control = inb( COM_LINE_CONTROL(com) );
-    printf("Old line control: ", 
+    kprintf("Old line control: \n\0" );
  
     uint8_t divisor_high = ( (divisor && 0xFF00 ) >> 8 );
     uint8_t divisor_low  = ( divisor && 0x00FF );

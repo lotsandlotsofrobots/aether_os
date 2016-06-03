@@ -44,16 +44,16 @@ int main()
     char c[64];
     uint16_t bytes_read = serial_read(DEBUG_COM, c, 64);
 
-    printf("Bytes read:\n\0");
-    if (bytes_read == 0 ) printf("zero");
+    kprintf("Bytes read:\n\0");
+    if (bytes_read == 0 ) kprintf("zero");
     else if (bytes_read > 0 && bytes_read < 10)
     {
-        printf("More than 0 but less than ten\n\0");
+        kprintf("More than 0 but less than ten\n\0");
     }
-    else if (bytes_read >= 10 && bytes_read <=64) printf("10-64\n\0");
-    else if (bytes_read > 64) printf("a lot\n\0");
+    else if (bytes_read >= 10 && bytes_read <=64) kprintf("10-64\n\0");
+    else if (bytes_read > 64) kprintf("a lot\n\0");
 
-    printf(c);
+    kprintf(c);
 */
     while ( 1 ) {
 	
