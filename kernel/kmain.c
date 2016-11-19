@@ -15,9 +15,9 @@ void init_debug_port()
 {
     #define DEBUG_COM 1
     set_serial_baud_rate(DEBUG_COM, 115200);
-    set_serial_line_control_settings(DEBUG_COM, 8, false, 1);
-    set_serial_fifo_settings(DEBUG_COM, SERIAL_FIFO_TRIGGER_14b_56bW, false);
-    set_rts(DEBUG_COM);
+    set_serial_line_control_settings(DEBUG_COM, SERIAL_8_DATA_BITS, SERIAL_1_STOP_BIT, SERIAL_NO_PARITY);
+    set_serial_fifo_settings(DEBUG_COM, SERIAL_FIFO_TRIGGER_14b_56bW, DEFAULT_SERIAL_FIFO);
+    set_serial_rts(DEBUG_COM);
 }
 
 
@@ -35,6 +35,7 @@ int main()
 
     serial_write(DEBUG_COM,'a');
     serial_write(DEBUG_COM,'!');
+    kprintf("Wrote two characters!\n\0");
     serial_write(DEBUG_COM,'P');
     serial_write(DEBUG_COM,'7');
 

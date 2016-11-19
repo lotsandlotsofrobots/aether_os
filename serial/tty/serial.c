@@ -2,56 +2,66 @@
 #include "portio.h"
 #include "io.h"
 
+#define SERIAL_DISABLE_IRQ(com) 	outb( COM_IRQ_ENABLE(com), 0x0 );
+
+#define DLAB_ON(com)			outb( COM_LINE_CONTROL(com), 0x80 );
+#define DLAB_OFF(com)			outb( COM_LINE_CONTROL(com), 0x0 );
+
+#define READ_LINE_CONTROL(com)		inb( COM_LINE_CONTROL(com) );
+
+#define SET_BAUD_LOW(com, baud_l)	outb( COM_BASE(com), baud_l );
+#define SET_BAUD_HIGH(com, baud_h)	outb( COM_DATA_BUFFER(com), baud_h );
+
+
 void set_serial_baud_rate(uint8_t com, com_baud_rate_t baud_rate)
 {
     unsigned int divisor = 115200 / (unsigned int) baud_rate;
+    divisor = 1;
 
-    // get the line control value so we can 
-    // set the DLAB value and remove it again later
-    uint8_t old_line_control = inb( COM_LINE_CONTROL(com) );
-    kprintf("Old line control: \n\0" );
- 
+    SERIAL_DISABLE_IRQ(com)
+
     uint8_t divisor_high = ( (divisor && 0xFF00 ) >> 8 );
     uint8_t divisor_low  = ( divisor && 0x00FF );
 
-    outb( COM_LINE_CONTROL(com), old_line_control | COM_DATA_BUFFER_DLAB_BIT );
+    divisor_high = 0;
+    divisor_low = 3;
 
-    outb( COM_BASE(com), divisor_low );
-    outb( COM_DATA_BUFFER(com), divisor_high );
+    DLAB_ON(com);
 
-    // line control & 0x7F = everything that was there - 0111_1111b
-    outb( COM_LINE_CONTROL(com), old_line_control & 0x7F );
+    SET_BAUD_LOW( com, divisor_low );
+    SET_BAUD_HIGH( com, divisor_high );
+
+    DLAB_OFF( com );
 }
 
 
-void set_serial_line_control_settings(uint8_t com, uint8_t data_bits, bool parity, uint8_t stop_bits)
-//void set_serial_line_control_settings(uint8_t com, uint8_t data_bits, uint8_t stop_bits, bool parity)
+void set_serial_line_control_settings(uint8_t com, uint8_t data_bits, uint8_t stop_bits, uint8_t parity)
 {
     uint8_t line_control = 0x0;
 
-    line_control |= (data_bits) & 0x03;     // 0000_0011 b
-    line_control |= (stop_bits<<2) & 0x04;  // 0000_0100 b
-    line_control |= (parity<<3) & 0x38;     // 0011_1000 b
+    line_control |= data_bits;
+    line_control |= stop_bits;
+    line_control |= parity;
 
     outb( COM_LINE_CONTROL(com), line_control );
 }
 
 
-void set_serial_fifo_settings(uint8_t com, serial_fifo_trigger_size_t trigger_size_setting, bool enable_wide_fifo)
+void set_serial_fifo_settings(uint8_t com, serial_fifo_trigger_size_t trigger_size_setting, uint8_t enable_wide_fifo)
 {
     uint8_t settings = 0x0;
 
-    settings |= (uint8_t)trigger_size_setting << 6;
-    settings |= ( enable_wide_fifo == true ? 0x10 : 0x0 );
+    settings |= (uint8_t) trigger_size_setting;
+    settings |= enable_wide_fifo;
+    settings |= RESET_SERIAL_FIFO;
 
     outb( COM_FIFO(com), settings );
 }
 
 
-void set_rts(uint8_t com)
+void set_serial_rts(uint8_t com)
 {
-    outb( COM_MODEM_CONTROL(com), 0x13 );
-    
+    outb( COM_MODEM_CONTROL(com), 0x03 );   
 }
 
 
@@ -84,25 +94,15 @@ uint8_t serial_read(uint8_t com, char *buffer, uint8_t buffersize)
 }
 
 
-void serial_write(uint8_t com, char c)
+void serial_write(uint8_t com, unsigned char c)
 {
-/*
-   uint8_t PORT = COM1_BASE;
-   outb(PORT + 1, 0x00);    // Disable all interrupts
-   outb(PORT + 3, 0x80);    // Enable DLAB (set baud rate divisor)
-   outb(PORT + 0, 0x01);    // Set divisor to 3 (lo byte) 38400 baud
-   outb(PORT + 1, 0x00);    //                  (hi byte)
-   outb(PORT + 3, 0x03);    // 8 bits, no parity, one stop bit
-   outb(PORT + 2, 0xC7);    // Enable FIFO, clear them, with 14-byte threshold
-   outb(PORT + 4, 0x0B);    // IRQs enabled, RTS/DSR set
-*/
-    char ch = 'a';
+    char ch = '.';
 
     while ( ( inb( COM_LINE_STATUS(com) ) & 0x20 ) == 0 ) {
-        ch += 1;
+        //ch += 1;
         printc(ch);
     }
 
-    outb( COM_BASE(com), 0x47 );
+    outb( COM_BASE(com), c );
 }
 
