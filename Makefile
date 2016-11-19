@@ -25,7 +25,7 @@ os.iso: kernel.elf
 	cp boot/stage2_eltorito $(ROOTFS_DIR)/boot/
 	cp $(INSTALL_DIR)/kernel.elf $(ROOTFS_DIR)/boot/kernel.elf
 	cd $(BUILD_DIR) ; genisoimage -R       \
-		-b boot/grub/stage2_eltorito    \
+		-b boot/stage2_eltorito    \
 		-no-emul-boot                   \
 		-boot-load-size 4               \
 		-A os                           \
